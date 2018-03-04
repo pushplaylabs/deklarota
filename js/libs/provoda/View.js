@@ -14,6 +14,10 @@ var nestBorrowInit = require('./dcl_view/nest_borrow/init');
 var nestBorrowDestroy = require('./dcl_view/nest_borrow/destroy');
 var nestBorrowCheckChange = require('./dcl_view/nest_borrow/check-change');
 
+var initProbes = require('./dcl_view/probe/init');
+var probeDestroy = require('./dcl_view/probe/destroy');
+var probeCheckChange = require('./dcl_view/probe/check-change');
+
 var pvUpdate = updateProxy.update;
 var cloneObj = spv.cloneObj;
 var $v = hp.$v;
@@ -80,6 +84,7 @@ var initView = function(target, view_otps, opts){
   target.req_order_field = null;
   target.tpl = null;
   target.c = null;
+  target.probe_watchers = null;
 
   target.dead = null;
   target.pv_view_node = null;
@@ -145,7 +150,17 @@ var initView = function(target, view_otps, opts){
   prsStCon.connect.root(target);
 
   nestBorrowInit(target);
+  initProbes(target);
 };
+
+var changeProbeUniversal = function (method) {
+  return function () {
+    var bwlev_view = $v.getBwlevView(this) || this.root_view.parent_view;
+    bwlev_view.RPCLegacy.apply(
+      bwlev_view, [method, this.mpx._provoda_id].concat(Array.prototype.slice.call(arguments, 2))
+    );
+  }
+}
 
 var View = spv.inh(StatesEmitter, {
   naming: function(fn) {
@@ -180,7 +195,9 @@ var View = spv.inh(StatesEmitter, {
 
       var md_id = this.mpx._provoda_id;
       bwlev_view.RPCLegacy('followTo', md_id);
-    }
+    },
+    toggleProbe: changeProbeUniversal('toggleProbe'),
+    updateProbe: changeProbeUniversal('updateProbe'),
   },
   onExtend: spv.precall(StatesEmitter.prototype.onExtend, function (md, props, original, params) {
     return onPropsExtend(md, props, original, params);
@@ -351,6 +368,8 @@ var View = spv.inh(StatesEmitter, {
       this.tpl = tpl;
     }
 
+    tpl.root_node_raw._provoda_view = this;
+
     return tpl;
   },
   addTemplatedWaypoint: function(wp_wrap) {
@@ -496,6 +515,10 @@ var View = spv.inh(StatesEmitter, {
       } else if (this.createBase){
         this.createBase();
       }
+    }
+
+    if (this.c) {
+      this.c._provoda_view = this;
     }
   },
   requestDetailesCreating: function() {
@@ -874,6 +897,7 @@ var View = spv.inh(StatesEmitter, {
       this.markAsDead(opts && opts.skip_md_call);
       nestBorrowDestroy(this);
       this._lbr.marked_as_dead = true;
+      probeDestroy(this);
     }
     return this;
   },
@@ -1343,6 +1367,7 @@ var View = spv.inh(StatesEmitter, {
 
     target.checkDeadChildren();
     nestBorrowCheckChange(target, nesname, items, rold_value, removed);
+    probeCheckChange(target, nesname, items, rold_value, removed);
     return target;
   },
   removeViewsByMds: function(array, nesname, space) {
