@@ -12,6 +12,7 @@ var checkModernNests = require('../dcl/nests/check');
 var checkPasses = require('../dcl/passes/check')
 var checkSubpager = require('../dcl/sub_pager/check');
 var collectSubpages = require('../dcl/sub_pager/collectSubpages');
+var rebuildReqPassCombo = require('../dcl/effects/consume-request/rebuildReqPassCombo')
 var rebuildReqs = require('../dcl/effects/requests/rebuild')
 
 var checkEffects = require('../dcl/effects/check')
@@ -88,6 +89,7 @@ return function(self, props, original, params) {
 
   checkPasses(self, props)
 
+  rebuildReqPassCombo(self)
   rebuildReqs(self)
 
 

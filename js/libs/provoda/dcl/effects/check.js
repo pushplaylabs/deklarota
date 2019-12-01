@@ -24,12 +24,17 @@ var buildProduce = require('./legacy/produce/rebuild')
 var buildApi = require('./legacy/api/rebuild')
 var ApiDeclr = require('./legacy/api/dcl')
 
+var ReqDcl = require('./consume-request/item')
+var buildRequest = require('./consume-request/rebuild')
 
 // var buildSel = require('../nest_sel/build');
 
 
 var parse = function(type, name, data) {
   switch (type) {
+    case 'consume-request': {
+      return new ReqDcl(name, data);
+    }
     case 'consume-state_request': {
       return new StateReqMap(name, data);
     }
@@ -112,6 +117,10 @@ var notEqual = function(one, two) {
 
 var rebuildType = function(self, type, result, list, typed_state_dcls) {
   switch (type) {
+    case 'consume-request': {
+      buildRequest(self, list)
+      return
+    }
     case 'consume-state_request': {
       buildStateReqs(self, list)
       return;
@@ -135,6 +144,8 @@ var rebuildType = function(self, type, result, list, typed_state_dcls) {
 }
 
 var rebuild = function(self, newV, oldV, listByType, typed_state_dcls) {
+  var needsRequestsRebuild = false
+
   for (var type in newV) {
     if (!newV.hasOwnProperty(type)) {
       continue;
@@ -144,7 +155,21 @@ var rebuild = function(self, newV, oldV, listByType, typed_state_dcls) {
       continue;
     }
 
+    if (!needsRequestsRebuild) {
+      switch (type) {
+        case 'consume-state_request':
+        case 'consume-nest_request':
+        case 'consume-request': {
+          needsRequestsRebuild = true;
+        }
+      }
+    }
+
     rebuildType(self, type, newV[type], listByType[type], typed_state_dcls)
+  }
+
+  if (!needsRequestsRebuild) {
+    return
   }
 }
 
