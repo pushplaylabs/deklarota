@@ -4,6 +4,7 @@ var spv = require('spv');
 var hp = require('../helpers');
 var get_constr = require('./get_constr');
 var __getReqDclNest = require('pv/__/__getReqDclNest')
+var __getReqDclState = require('pv/__/__getReqDclState')
 
 
 var getEncodedState = hp.getEncodedState;
@@ -209,7 +210,7 @@ function chechTreeStructure(app, md, dep) {
         console.log(new Error('should not be `needed` here'));
       }
       var short_name = hp.getShortStateName(dep.value);
-      var can_request = md._states_reqs_index && md._states_reqs_index[short_name];
+      var can_request = __getReqDclState(md, short_name)
       if (can_request) {
         dep.can_request = true;
         return dep;

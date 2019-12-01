@@ -17,6 +17,7 @@ var postInitModel = require('./Model/postInit')
 var initSi = require('./Model/initConstr/subitem')
 var getLinedStructure = require('./Model/getLinedStructure')
 var toSimpleStructure = require('./Model/toSimpleStructure')
+var __getReqDclState = require('pv/__/__getReqDclState')
 
 var wrapInputCall = require('pv/wrapInputCall')
 var __getReqDclNest = require('pv/__/__getReqDclNest')
@@ -142,7 +143,7 @@ add({
     if (parsed_state && parsed_state.rel_type == 'nesting') {
       return this.getNestingSource(parsed_state.nesting_name, app);
     } else {
-      var maps_for_state = this._states_reqs_index && this._states_reqs_index[state_name];
+      var maps_for_state = __getReqDclState(this, state_name);
       if (maps_for_state) {
         var result = new Array(maps_for_state.length);
         for (var i = 0; i < maps_for_state.length; i++) {
