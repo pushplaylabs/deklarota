@@ -1,6 +1,7 @@
 define(function(require){
 'use strict';
 
+var __getReqDclNest = require('pv/__/__getReqDclNest')
 var hp = require('../helpers');
 var LocalWatchRoot = require('../nest-watch/LocalWatchRoot');
 var addRemoveN = require('../nest-watch/add-remove');
@@ -190,7 +191,7 @@ function requestNesting(md, declr, dep) {
 }
 
 var handleCountlessNesting = function(dep, req_dep, self) {
-  var declr = self._nest_reqs && self._nest_reqs[dep.value];
+  var declr = __getReqDclNest(self, dep.value)
   if (!dep.state) {
     requestNesting(self, declr, dep);
     return

@@ -4,6 +4,7 @@ var BrowseMap = require('./BrowseMap');
 var spv = require('spv');
 var pv = require('../provoda');
 var cloneObj = spv.cloneObj
+var __getReqDclNest = require('pv/__/__getReqDclNest')
 
 var pushToRoute = require('../structure/pushToRoute')
 var initDeclaredNestings = require('../initDeclaredNestings');
@@ -31,7 +32,7 @@ var LoadableListBase = spv.inh(BrowseMap.Model, {
     //self.loadable_lists[ self.main_list_name ] = [];
     pv.updateNesting(self,  self.main_list_name, []);
 
-    var has_loader = !!(self._nest_reqs && self._nest_reqs[self.main_list_name]);
+    var has_loader = !!(__getReqDclNest(self, self.main_list_name));
     if (has_loader){
       pv.update(self, "has_data_loader", true);
     }
@@ -145,9 +146,12 @@ var LoadableListBase = spv.inh(BrowseMap.Model, {
 
   requestMoreData: function(nesting_name) {
     nesting_name = nesting_name || this.main_list_name;
-    if (this._nest_reqs && this._nest_reqs[nesting_name]) {
-      this.requestNesting( this._nest_reqs[nesting_name], nesting_name );
+    var dcl = __getReqDclNest(this, nesting_name)
+    if (!dcl) {
+      return
     }
+
+    this.requestNesting( dcl, nesting_name );
   },
 
   insertDataAsSubitems: function(target, nesting_name, data_list, opts, source_name) {

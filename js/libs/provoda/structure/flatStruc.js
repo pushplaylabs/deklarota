@@ -3,12 +3,13 @@ define(function(require) {
 var spv = require('spv');
 var hp = require('../helpers');
 var get_constr = require('./get_constr');
+var __getReqDclNest = require('pv/__/__getReqDclNest')
 
 
 var getEncodedState = hp.getEncodedState;
 var getNestingConstr = get_constr.getNestingConstr;
 var getNestReq = function(md, nest_name) {
-  return md._nest_reqs && md._nest_reqs[nest_name];
+  return __getReqDclNest(md, nest_name)
 }
 var getNestConstr = function(md, nest_name) {
   return md._nest_rqc && md._nest_rqc[nest_name]
