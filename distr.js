@@ -51,7 +51,7 @@ const build = ({
 
     plugins: [
       replace({
-        "process.versions": '({})',
+        // "process.versions": '({})',
         NODE_ENV: `'${process.env.NODE_ENV}'`,
       }),
     ]

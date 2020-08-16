@@ -1,0 +1,18 @@
+{
+  "name": "babel-plugin-replace-imports",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash.isempty": "^4.4.0",
+    "lodash.isfunction": "^3.0.9",
+    "lodash.isobject": "^3.0.2",
+    "lodash.isregexp": "^4.0.1",
+    "lodash.isstring": "^4.0.1"
+  }
+}

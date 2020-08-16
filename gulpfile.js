@@ -253,3 +253,20 @@ function extend(origin, add) {
 	}
 	return origin;
 }
+
+
+gulp.task('convjs', function() {
+	var tt = require('./tt')
+
+	return gulp.src('./js/**/**.js')
+		.pipe(tt({directory: __dirname}))
+		.pipe(gulp.dest('./js'))
+		// .pipe(deinline({noInject: true}))
+		// .pipe(foreach(function(stream, f) {
+		// 	if (path.basename(f.path) == 'index.html') {
+		// 		return stream.pipe(gulp.dest('./'));
+		// 	} else {
+		// 		return stream.pipe(gulp.dest('./dist-envs/temp'));
+		// 	}
+		// }));
+});
